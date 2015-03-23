@@ -12,10 +12,9 @@ module ZEN
     # If we're not running in the Production environment,
     # we will update all packages on each run:
     def update_pkgs (environment)
-      if environment != "Production"
-        execute "yummy-update" do
-          command "yum update -y"
-        end
+      execute "yummy-update" do
+        command "yum update -y"
+        only_if { node.environment != "Production" }
       end
     end
 
@@ -25,12 +24,12 @@ module ZEN
     def install_pkgs (pkg_list)
       if pkg_list.class == Array
         pkg_list.each do |pkg|
-          package "#{pkg}" do
+          package pkg do
             action :install
           end
         end
       else
-        package "#{pkg_list}" do
+        package pkg_list do
           action :install
         end
       end
